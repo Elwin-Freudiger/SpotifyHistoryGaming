@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Uploader</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <h1>New Player Entry</h1>
+  <form id="uploadForm" method="POST" enctype="multipart/form-data" action="/upload">
+    <label for="playerName">Player Name:</label>
+    <input type="text" id="playerName" name="player_name" placeholder="Enter your name" required>
+    <br><br>
+    <label for="fileInput">Select a Folder:</label>
+    <input type="file" id="fileInput" name="files[]" webkitdirectory multiple required>
+    <br><br>
+    <button type="submit">Add Player</button>
+  </form>
+  <div id="results"></div>
+  <script src="/static/script.js"></script>
+</body>
+</html>
