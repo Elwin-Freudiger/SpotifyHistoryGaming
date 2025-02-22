@@ -1,23 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JSON Uploader</title>
-  <link rel="stylesheet" href="/static/styles.css">
+    <title>Spotify Listening Game</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
 <body>
-  <h1>New Player Entry</h1>
-  <form id="uploadForm" method="POST" enctype="multipart/form-data" action="/upload">
-    <label for="playerName">Player Name:</label>
-    <input type="text" id="playerName" name="player_name" placeholder="Enter your name" required>
-    <br><br>
-    <label for="fileInput">Select a Folder:</label>
-    <input type="file" id="fileInput" name="files[]" webkitdirectory multiple required>
-    <br><br>
-    <button type="submit">Add Player</button>
-  </form>
-  <div id="results"></div>
-  <script src="/static/script.js"></script>
+    <h1>Spotify Listening Game</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="text" name="player_name" placeholder="Your Name" required>
+        <input type="file" name="spotify_data" multiple required>
+        <button type="button" onclick="submitData()">Submit Data</button>
+    </form>
+
+    <div id="game">
+        <button onclick="startRound()">Start Round</button>
+        <div id="songInfo"></div>
+        <select id="player_guess"></select>
+        <button onclick="submitGuess()">Submit Guess</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function submitData() {
+            const form = document.getElementById('uploadForm');
+            const formData = new FormData(form);
+            fetch('/submit', { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => alert(data.status));
+        }
+
+        function startRound() {
+            fetch('/get_round')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('songInfo').innerHTML = `${data.song_name} by ${data.artist}`;
+                    document.getElementById('player_guess').innerHTML = '';
+                    ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5"].forEach(player => {
+                        const option = document.createElement('option');
+                        option.value = player;
+                        option.textContent = player;
+                        document.getElementById('player_guess').appendChild(option);
+                    });
+                });
+        }
+
+        function submitGuess() {
+            const guess = document.getElementById('player_guess').value;
+            const songInfo = document.getElementById('songInfo').textContent.split(' by ');
+            fetch('/check_answer', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({
+                    song_name: songInfo[0],
+                    artist: songInfo[1],
+                    player_guess: guess
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = data.correct ? `Correct! Played for ${data.time_played}` : `Wrong! Played for ${data.time_played}`;
+                });
+        }
+    </script>
 </body>
 </html>
