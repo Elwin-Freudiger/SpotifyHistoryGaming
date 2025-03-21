@@ -134,3 +134,6 @@ dist
 .venv/
 
 venv/
+.Rproj.user
+
+*.Rproj
