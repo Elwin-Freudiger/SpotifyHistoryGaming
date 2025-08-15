@@ -213,13 +213,11 @@ whoAmongUsServer <- function(id) {
 # Main App UI
 ui <- navbarPage(
   "SPOTIFY GAMES",
-  tabPanel("Song Player Game", songPlayerGameUI("songPlayerGame")),
   tabPanel("Who Among Us?", whoAmongUsUI("whoAmongUs"))
 )
 
 # Main App Server
 server <- function(input, output, session) {
-  songPlayerGameServer("songPlayerGame")
   whoAmongUsServer("whoAmongUs")
 }
 
